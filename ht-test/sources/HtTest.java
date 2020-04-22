@@ -13,13 +13,22 @@ class HTTest {
 
     public static void main(String[] args) throws InterruptedException {
         if (args.length == 0) {
-            System.err.println("Usage: httest <opcount> <numthreads>");
+            System.err.println("Usage: httest <opcount> <numtests> <numthreads> ");
             System.exit(1);
         }
 
         long opsCount = parseLong(args[0]);
-        int numThreads = parseInt((args[1]));
+        int numTests = parseInt(args[2]);
+        int numThreads = parseInt(args[2]);
 
+        for (int i = 0; i < numTests; i++) {
+            System.out.println("Running test #" + i);
+            runTest(opsCount, numThreads);
+            System.out.println();
+        }
+    }
+
+    private static void runTest(long opsCount, int numThreads) throws InterruptedException {
         var executor = Executors.newFixedThreadPool(numThreads);
 
         long finalResult = 0;
@@ -37,7 +46,7 @@ class HTTest {
                 var cpuTimeBefore = threadMXBean.getCurrentThreadCpuTime();
                 long result = 0;
                 for(long j = 0; j < opsCount; j++) {
-                    result = (result + j) * j;
+                    result = (result + j) * j / ((j << 6) + 7);
                 }
                 var cpuTimeAfter = threadMXBean.getCurrentThreadCpuTime();
                 var wallTimeAfter = System.currentTimeMillis();
